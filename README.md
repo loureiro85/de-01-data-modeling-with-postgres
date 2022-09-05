@@ -1,2 +1,2 @@
 # de-01-data-modeling-with-postgres
-Data Modeling with Postgres - Udacity's Nanodegree Projetct
+Data Modeling with Postgres - Udacity's Nanodegree Project
