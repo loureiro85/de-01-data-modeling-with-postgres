@@ -9,78 +9,77 @@ logartist_table_drop = "DROP TABLE IF EXISTS logartists;"
 
 # CREATE TABLES
 
-        # songplay_id INT,
-        # PRIMARY KEY (songplay_id)
 songplay_table_create = ("""
     CREATE TABLE IF NOT EXISTS songplays (
-        start_time timestamp,
-        user_id INT,
-        level VARCHAR,
-        song_id VARCHAR,
-        artist_id VARCHAR,
-        session_id INT,
-        location VARCHAR,
-        user_agent VARCHAR
+        songplay_id     SERIAL,
+        start_time      TIMESTAMP   NOT NULL,
+        user_id         INT         NOT NULL,
+        level           VARCHAR,
+        song_id         VARCHAR,
+        artist_id       VARCHAR,
+        session_id      INT,
+        location        VARCHAR,
+        user_agent      VARCHAR,
+        PRIMARY KEY (songplay_id)
     );
 """)
 
 user_table_create = ("""
     CREATE TABLE IF NOT EXISTS users (
-        user_id INT,
-        first_name VARCHAR,
-        last_name VARCHAR,
-        gender VARCHAR,
-        level VARCHAR,
+        user_id     INT,
+        first_name  VARCHAR,
+        last_name   VARCHAR,
+        gender      VARCHAR,
+        level       VARCHAR,
         PRIMARY KEY (user_id)
     );
 """)
 
 song_table_create = ("""
     CREATE TABLE IF NOT EXISTS songs (
-        song_id VARCHAR,
-        title VARCHAR,
-        artist_id VARCHAR,
-        year INT,
-        duration DECIMAL,
+        song_id     VARCHAR,
+        title       VARCHAR     NOT NULL,
+        artist_id   VARCHAR,
+        year        INT,
+        duration    DECIMAL     NOT NULL,
         PRIMARY KEY (song_id)
     );
 """)
 
 artist_table_create = ("""
     CREATE TABLE IF NOT EXISTS artists (
-        artist_id VARCHAR,
-        artist_name VARCHAR,
-        artist_location VARCHAR,
-        artist_latitude DECIMAL,
-        artist_longitude DECIMAL,
+        artist_id           VARCHAR,
+        name                VARCHAR     NOT NULL,
+        artist_location     VARCHAR,
+        latitude            DOUBLE PRECISION,
+        longitude           DOUBLE PRECISION,
         PRIMARY KEY (artist_id)
     );
 """)
 
 time_table_create = ("""
     CREATE TABLE IF NOT EXISTS time (
-        start_time timestamp,
-        hour INT,
-        day INT,
-        week INT,
-        month INT,
-        year INT,
-        weekday INT,
+        start_time  TIMESTAMP,
+        hour        INT,
+        day         INT,
+        week        INT,
+        month       INT,
+        year        INT,
+        weekday     INT,
         PRIMARY KEY (start_time)
     );
 """)
 
 logartist_table_create = ("""
     CREATE TABLE IF NOT EXISTS logartists (
-        artist_name VARCHAR,
-        session_id INT,
-        PRIMARY KEY (artist_name)
+        name            VARCHAR,
+        session_id      INT,
+        PRIMARY KEY (name)
     );
 """)
 
 # INSERT RECORDS
 
-        # songplay_id,
 songplay_table_insert = ("""
     INSERT INTO songplays (
         start_time,
@@ -118,19 +117,20 @@ song_table_insert = ("""
         duration
     )
     VALUES (%s, %s, %s, %s, %s)
+    ON CONFLICT DO NOTHING;
 """)
 
 artist_table_insert = ("""
     INSERT INTO artists (
         artist_id,
-        artist_name,
+        name,
         artist_location,
-        artist_latitude,
-        artist_longitude
+        latitude,
+        longitude
     )
     VALUES (%s, %s, %s, %s, %s)
     ON CONFLICT (artist_id) DO UPDATE
-    SET artist_name = EXCLUDED.artist_name;
+    SET name = EXCLUDED.name;
 """)
 
 time_table_insert = ("""
@@ -150,10 +150,10 @@ time_table_insert = ("""
 # Debugging
 logartist_table_insert = ("""
     INSERT INTO logartists (
-        artist_name
+        name
     )
     VALUES (%s)
-    ON CONFLICT (artist_name) DO NOTHING;
+    ON CONFLICT (name) DO NOTHING;
 """)
 
 
@@ -161,14 +161,9 @@ logartist_table_insert = ("""
 song_select = ("""
     SELECT song_id, songs.artist_id FROM songs
     JOIN artists ON songs.artist_id = artists.artist_id
-    WHERE title=%s AND artist_name=%s AND duration=%s;
+    WHERE title=%s AND name=%s AND duration=%s;
 """)
 
-# song_select = ("""
-#     SELECT song_id, songs.artist_id FROM songs
-#     JOIN artists ON songs.artist_id = artists.artist_id
-#     WHERE title=%s AND artist_name=%s;
-# """)
 
 # QUERY LISTS
 

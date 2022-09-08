@@ -10,6 +10,14 @@ from sql_queries import (artist_table_insert, logartist_table_insert, song_selec
 
 
 def process_song_file(cur, filepath):
+    """Process song files by reading and inserting in DB.
+
+    Steps:
+    - Read song files in JSON format;
+    - Insert data into 'songs' table;
+    - Insert data into 'artists' table.
+    """
+
     # open song file
     df = pd.read_json(filepath, typ='series')
 
@@ -35,10 +43,21 @@ def process_song_file(cur, filepath):
 
 
 def process_log_file(cur, filepath):
-    # open log file
+    """Process log files by reading and inserting in DB.
+
+    Steps:
+    - Read log files in JSON format;
+    - Filter by 'NextSong' page action;
+    - Convert timestamp format to datetime;
+    - Insert data into 'time' table;
+    - Insert data into 'users' table;
+    - Insert data into 'songplays' table;
+    """
+
+    # read log file
     df = pd.read_json(filepath, lines=True)
 
-    # filter by NextSong action
+    # filter by NextSong page action
     df = df[df['page'] == 'NextSong']
 
     # convert timestamp column to datetime
@@ -120,16 +139,13 @@ def process_log_file(cur, filepath):
         )
         cur.execute(songplay_table_insert, songplay_data)
 
-        # Debugging
-        # logartist_data = (row['artist'], row['sessionId'])
         logartist_data = (row['artist'],)
-        # print(f"row['artist'] = {row['artist']}")
-        # print(f"type(row['artist']) = {type(row['artist'])}")
         cur.execute(logartist_table_insert, logartist_data)
-        # print(f"cur.query = {cur.query}")
 
 
 def process_data(cur, conn, filepath, func):
+    """Process data by iterating over several files in filepath."""
+
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -149,6 +165,8 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
+    """Reads JSON files specified in filepaths and writes to SQL tables."""
+
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
